@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: title
+  labels:
+    role: title
+spec:
+  containers:
+    - name: title
+      image: nginx
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            - "rm"
+            - "-f"
+            -
+      ports:
+        - containerPort: 80
+          protocol: TCP
