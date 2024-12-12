@@ -19,6 +19,15 @@ spec:
       labels:
         app: my-app
     spec:
+#      affinity:
+#        nodeAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            nodeSelectorTerms:
+#              - matchExpressions:
+#                  - key: homework
+#                    operator: In
+#                    values:
+#                      - "true"
       volumes:
         - name: config-volume
           configMap:
