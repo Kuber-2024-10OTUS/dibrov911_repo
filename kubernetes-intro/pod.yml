@@ -7,7 +7,7 @@ spec:
   volumes:
     - name: config-volume
       configMap:
-        name: nginx-conf
+        name: nginx-config
     - name: html
       emptyDir:
         sizeLimit: 50M
@@ -25,7 +25,11 @@ spec:
         - mountPath: /homework
           name: html
         - mountPath: /etc/nginx/conf.d
-          name: nginx-conf
+          name: config-volume
+      lifecycle:
+        preStop:
+          exec:
+            command: ['/bin/sh', '-c', 'rm -f /homework/index.html']
       ports:
         - containerPort: 8000
           protocol: TCP
