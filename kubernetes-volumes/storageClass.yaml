@@ -3,5 +3,6 @@ kind: StorageClass
 metadata:
   name: my-sc
   namespace: homework
-provisioner: k8s.io/no-provisioner
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Retain

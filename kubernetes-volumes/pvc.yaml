@@ -3,9 +3,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: my-pvc
   namespace: homework
-  annotations:
-    volume.beta.kubernetes.io/storage-class: my-sc
+#  annotations:
+#    volume.beta.kubernetes.io/storage-class: my-sc
 spec:
+  storageClassName: my-sc
   accessModes:
     - ReadWriteOnce
   resources:
