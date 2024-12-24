@@ -4,13 +4,13 @@ metadata:
   name: my-pv
 spec:
   capacity:
-    storage: 100M
+    storage: 55M
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   storageClassName: my-sc
   local:
-    path: /data
+    path: /pv-data
   nodeAffinity:
     required:
       nodeSelectorTerms:

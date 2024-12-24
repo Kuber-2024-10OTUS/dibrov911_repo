@@ -5,11 +5,11 @@ metadata:
   labels:
     app: my-app
 spec:
-  replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
+  replicas: 1
+#  strategy:
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxUnavailable: 1
   selector:
     matchLabels:
       app: my-app
@@ -41,24 +41,26 @@ spec:
       initContainers:
         - name: init
           image: busybox:1.28
+#          command: ["/bin/sh"]
+#          args: ["-c", "trap : TERM INT; sleep infinity & wait"]
           volumeMounts:
             - mountPath: /init
               name: html
           command: [ 'wget', '-O', '/init/index.html','http://ya.ru' ]
       containers:
-        - name: test-pod
+        - name: my-container
           image: nginx:latest
           volumeMounts:
-            - mountPath: /homework
+            - mountPath: /homework/
               name: html
-            - mountPath: /etc/nginx/conf.d
-              name: config-volume
-            - mountPath: /homework/file
-              name: cm-volume
-          lifecycle:
-            preStop:
-              exec:
-                command: [ '/bin/sh', '-c', 'rm -f /homework/index.html' ]
+#            - mountPath: /etc/nginx/conf.d
+#              name: config-volume
+#            - mountPath: /homework/file
+#              name: cm-volume
+#          lifecycle:
+#            preStop:
+#              exec:
+#                command: [ '/bin/sh', '-c', 'rm -f /homework/index.html' ]
           readinessProbe:
             httpGet:
               path: /index.html

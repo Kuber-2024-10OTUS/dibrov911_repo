@@ -38,6 +38,8 @@ spec:
       initContainers:
         - name: init
           image: busybox:1.28
+#          command: ["/bin/sh", "-c", "--"]
+#          args: ["while true; do sleep 6000; done;"]
           volumeMounts:
             - mountPath: /init
               name: html
