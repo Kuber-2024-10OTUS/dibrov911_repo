@@ -19,15 +19,15 @@ spec:
       labels:
         app: my-app
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: homework
-                    operator: In
-                    values:
-                      - "true"
+#      affinity:
+#        nodeAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            nodeSelectorTerms:
+#              - matchExpressions:
+#                  - key: homework
+#                    operator: In
+#                    values:
+#                      - "true"
       volumes:
         - name: config-volume
           configMap:
@@ -41,12 +41,12 @@ spec:
       initContainers:
         - name: init
           image: busybox:1.28
-#          command: ["/bin/sh"]
-#          args: ["-c", "trap : TERM INT; sleep infinity & wait"]
+          command: ["/bin/sh"]
+          args: ["-c", "trap : TERM INT; sleep 6000 & wait"]
           volumeMounts:
             - mountPath: /init
               name: html
-          command: [ 'wget', '-O', '/init/index.html','http://ya.ru' ]
+#          command: [ 'wget', '-O', '/init/index.html','http://ya.ru' ]
       containers:
         - name: my-container
           image: nginx:latest
