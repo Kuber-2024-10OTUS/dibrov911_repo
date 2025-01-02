@@ -5,11 +5,11 @@ metadata:
   labels:
     app: my-app
 spec:
-  replicas: 1
-#  strategy:
-#    type: RollingUpdate
-#    rollingUpdate:
-#      maxUnavailable: 1
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: my-app
@@ -19,15 +19,15 @@ spec:
       labels:
         app: my-app
     spec:
-#      affinity:
-#        nodeAffinity:
-#          requiredDuringSchedulingIgnoredDuringExecution:
-#            nodeSelectorTerms:
-#              - matchExpressions:
-#                  - key: homework
-#                    operator: In
-#                    values:
-#                      - "true"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: homework
+                    operator: In
+                    values:
+                      - "true"
       volumes:
         - name: config-volume
           configMap:
