@@ -33,29 +33,34 @@ spec:
           configMap:
             name: nginx-config
         - name: html
-          emptyDir:
-            sizeLimit: 50M
+          persistentVolumeClaim:
+            claimName: my-pvc
+        - name: cm-volume
+          configMap:
+            name: my-cm
       initContainers:
         - name: init
           image: busybox:1.28
-#          command: ["/bin/sh", "-c", "--"]
-#          args: ["while true; do sleep 6000; done;"]
+          command: ["/bin/sh"]
+          args: ["-c", "trap : TERM INT; sleep 6000 & wait"]
           volumeMounts:
             - mountPath: /init
               name: html
-          command: [ 'wget', '-O', '/init/index.html','http://ya.ru' ]
+#          command: [ 'wget', '-O', '/init/index.html','http://ya.ru' ]
       containers:
-        - name: test-pod
+        - name: my-container
           image: nginx:latest
           volumeMounts:
-            - mountPath: /homework
+            - mountPath: /homework/
               name: html
-            - mountPath: /etc/nginx/conf.d
-              name: config-volume
-          lifecycle:
-            preStop:
-              exec:
-                command: [ '/bin/sh', '-c', 'rm -f /homework/index.html' ]
+#            - mountPath: /etc/nginx/conf.d
+#              name: config-volume
+#            - mountPath: /homework/file
+#              name: cm-volume
+#          lifecycle:
+#            preStop:
+#              exec:
+#                command: [ '/bin/sh', '-c', 'rm -f /homework/index.html' ]
           readinessProbe:
             httpGet:
               path: /index.html
