@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: {{ .Values.app.namespace}}
+data:
+  default.conf: |
+    server {
+        listen       {{toYaml .Values.app.main.ListenPort}};
+        server_name  localhost;
+    
+        location / {
+            root   /homework;
+            index  index.html;
+        }
+    
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }

@@ -1,0 +1,85 @@
+app:
+  namespace: my-helm
+  deploymentName: test-deployment
+  podAnnotations:
+    labels:
+      app: my-app
+  volumes:
+    - name: workdir
+      persistentVolumeClaim:
+        claimName: test-pvc
+    - name: nginx-config
+      configMap:
+        name: nginx-cm
+  main:
+    name: nginx
+    replicaCount: 2
+    deploymentStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1
+    containerPort: 8000
+    image:
+      repository: nginx
+      tag: latest
+      pullPolicy: IfNotPresent
+    ListenPort: 80
+    probe:
+      isEnable: false
+
+  init:
+    name: init
+    image:
+      repository: busybox
+      tag: "1.28"
+      pullPolicy: IfNotPresent
+    command: [ wget -O /init/index.html http://info.cern.ch ]
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: homework
+                operator: In
+                values:
+                  - "true"
+  PersistentVolumeClaim:
+    - name: html
+      persistentVolumeClaim:
+        claimName: my-pvc
+        name: nginx-cm
+persistentVolumes:
+  targetPath: /pv-data
+
+ingress:
+  paths:
+    - path: /homepage
+      pathType: Prefix
+      backend:
+        service:
+          name: test-service-2
+          port:
+            number: 80
+    - path: /index.html ## Корневой путь внутри подов, т.е то, что они отдают по умолчанию на 80 порту согласно спеке деплоймента
+      pathType: ImplementationSpecific
+      backend:
+        service:
+          name: test-service-2
+          port:
+            number: 80
+    - path: /conf/file
+      pathType: ImplementationSpecific
+      backend:
+        service:
+          name: test-service-2
+          port:
+            number: 80
+    - path: /metrics.html
+      pathType: ImplementationSpecific
+      backend:
+        service:
+          name: test-service-2
+          port:
+            number: 80
+  hostname: homework.otus

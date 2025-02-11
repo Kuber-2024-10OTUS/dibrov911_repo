@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.app.deploymentName}}
+  namespace: {{.Values.app.namespace}}
+  labels:
+    app: my-app
+spec:
+  replicas: {{.Values.app.main.replicaCount}}
+  strategy:
+    type: {{- toYaml .Values.app.main.deploymentStrategy | nindent 2}}
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      name: my-app
+      labels:
+        app: my-app
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: homework
+                    operator: In
+                    values:
+                      - "true"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: nginx-config
+        - name: html
+          persistentVolumeClaim:
+            claimName: my-pvc
+        - name: cm-volume
+          configMap:
+            name: my-cm
+      initContainers:
+        - name: init
+          image: busybox:1.28
+#          command: ["/bin/sh"]
+#          args: ["-c", "trap : TERM INT; sleep 6000 & wait"]
+          volumeMounts:
+            - mountPath: /init
+              name: html
+          command: [ 'wget', '-O', '/init/index.html','http://ya.ru' ]
+      containers:
+        - name: my-container
+          image: nginx:latest
+          volumeMounts:
+            - mountPath: /homework/
+              name: html
+#            - mountPath: /etc/nginx/conf.d
+#              name: config-volume
+#            - mountPath: /homework/file
+#              name: cm-volume
+          lifecycle:
+            preStop:
+              exec:
+                command: [ '/bin/sh', '-c', 'rm -f /homework/index.html' ]
+          {{- if .Values.app.main.probe.isEnable }}
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 8000
+          {{- end }}
+          ports:
+            - containerPort: {{.Values.app.main.containerPort}}
+              protocol: TCP
